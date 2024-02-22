@@ -5,10 +5,12 @@ use bevy::{
 };
 use bevy_prng::ChaCha8Rng;
 use bevy_rand::prelude::*;
-use rand::distributions::{Distribution as _, Uniform};
+use rand::distributions::Distribution as _;
 use rand_distr::Normal;
 
 use argh::FromArgs;
+
+const PI: f32 = 3.141592653589793;
 
 #[derive(FromArgs)]
 /// Show a galaxy view.
@@ -53,12 +55,6 @@ fn setup_scene(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut rng: ResMut<GlobalEntropy<ChaCha8Rng>>,
 ) {
-    // Spiral
-    // x = r(phi)cos(phi)
-    // y = r(phi)sin(phi)
-    // logarithmic: r = a*exp(k*phi)
-    // hyperbolic spiral: r = a / phi
-
     commands.spawn((
         Camera3dBundle {
             camera: Camera {
@@ -77,8 +73,12 @@ fn setup_scene(
         emissive: Color::rgb_linear(0., 0., 500.),
         ..default()
     });
+    let material_emissive2 = materials.add(StandardMaterial {
+        emissive: Color::rgb_linear(500., 0., 0.),
+        ..default()
+    });
 
-    for planet in rand_planet_field(params.number_of_planets, &mut rng) {
+    for planet in spiral_arm_field(params.number_of_planets, &mut rng) {
         spawn_planet(
             &planet,
             material_emissive1.clone(),
@@ -86,6 +86,18 @@ fn setup_scene(
             &mut meshes,
         );
     }
+
+    spawn_planet(
+        &Planet {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+            radius: 1.4,
+        },
+        material_emissive2.clone(),
+        &mut commands,
+        &mut meshes,
+    );
 }
 
 #[derive(Component)]
@@ -109,6 +121,14 @@ fn move_camera(
 
     if keyboard.pressed(KeyCode::D) {
         query_camera.get_single_mut().unwrap().translation.y -= 0.1;
+    }
+
+    if keyboard.pressed(KeyCode::T) {
+        query_camera.get_single_mut().unwrap().translation.z += 0.1;
+    }
+
+    if keyboard.pressed(KeyCode::G) {
+        query_camera.get_single_mut().unwrap().translation.z -= 0.1;
     }
 }
 
@@ -137,16 +157,20 @@ fn spawn_planet(
     ));
 }
 
-fn rand_planet_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Vec<Planet> {
+fn rand_planet_field(
+    n: usize,
+    planet: &Planet,
+    rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>,
+) -> Vec<Planet> {
     let rng = rng.as_mut();
 
-    let x_scale = 100.;
-    let y_scale = 100.;
-    let z_scale = 1.;
+    let x_scale = 20.;
+    let y_scale = 20.;
+    let z_scale = 2.;
 
-    let x_ranger = Uniform::from(-1. * x_scale..1. * x_scale);
-    let y_ranger = Normal::new(0., y_scale / 2.).unwrap();
-    let z_ranger = Uniform::from(-1. * z_scale..1. * z_scale);
+    let x_ranger = Normal::new(planet.x, x_scale / 2.).unwrap();
+    let y_ranger = Normal::new(planet.y, y_scale / 2.).unwrap();
+    let z_ranger = Normal::new(planet.z, z_scale / 2.).unwrap();
     let radius_ranger = Normal::new(0.3, 0.1).unwrap().map(|val: f32| val.max(0.1));
 
     let mut planets = Vec::with_capacity(n);
@@ -161,4 +185,46 @@ fn rand_planet_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> V
     }
 
     planets
+}
+
+fn spiral_arm(n: usize, offset: f32) -> Vec<Planet> {
+    let mut planets = Vec::with_capacity(n);
+
+    // Spiral
+    // x = r(phi)cos(phi)
+    // y = r(phi)sin(phi)
+    // logarithmic: r = a*exp(k*phi)
+    // hyperbolic spiral: r = a / phi
+
+    let begin = 0.5;
+    let end = 8. * PI;
+    let step = (end - begin) / n as f32;
+
+    let mut phi = begin;
+
+    while phi <= end {
+        let r = 0.3 * f32::exp(0.3 * phi);
+        let x = r * f32::cos(phi + offset);
+        let y = r * f32::sin(phi + offset);
+        let z = 0.;
+        let radius = 0.4;
+
+        planets.push(Planet { x, y, z, radius });
+        phi += step;
+    }
+
+    planets
+}
+
+fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Vec<Planet> {
+    let first_arm = spiral_arm(n, 0.);
+    let second_arm = spiral_arm(n, (2. / 3.) * PI);
+    let third_arm = spiral_arm(n, (4. / 3.) * PI);
+
+    first_arm
+        .into_iter()
+        .chain(second_arm.into_iter())
+        .chain(third_arm.into_iter())
+        .flat_map(|planet| rand_planet_field(10, &planet, rng))
+        .collect()
 }

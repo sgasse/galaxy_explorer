@@ -16,4 +16,4 @@ rand_distr = "0.4.3"
 
 [profile.release]
 opt-level = 3
-lto = true
+# lto = true
