@@ -8,8 +8,30 @@ use bevy_rand::prelude::*;
 use rand::distributions::{Distribution as _, Uniform};
 use rand_distr::Normal;
 
+use argh::FromArgs;
+
+#[derive(FromArgs)]
+/// Show a galaxy view.
+struct GalaxyView {
+    /// how many planets to sample
+    #[argh(option, short = 'n', default = "50")]
+    number_of_planets: usize,
+}
+
+#[derive(Resource)]
+struct WorldParams {
+    number_of_planets: usize,
+}
+
 fn main() {
+    let args: GalaxyView = argh::from_env();
+
+    let params = WorldParams {
+        number_of_planets: args.number_of_planets,
+    };
+
     App::new()
+        .insert_resource(params)
         .add_plugins(DefaultPlugins)
         .add_plugins(EntropyPlugin::<ChaCha8Rng>::default())
         .add_systems(Startup, setup_scene)
@@ -25,6 +47,7 @@ struct Planet {
 }
 
 fn setup_scene(
+    params: Res<WorldParams>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -55,7 +78,7 @@ fn setup_scene(
         ..default()
     });
 
-    for planet in rand_planet_field(500, &mut rng) {
+    for planet in rand_planet_field(params.number_of_planets, &mut rng) {
         spawn_planet(
             &planet,
             material_emissive1.clone(),
