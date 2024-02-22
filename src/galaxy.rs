@@ -121,21 +121,23 @@ fn spiral_arm(n: usize, offset: f32) -> Vec<Planet> {
     // logarithmic: r = a*exp(k*phi)
     // hyperbolic spiral: r = a / phi
 
-    let begin = 0.5;
-    let end = 8. * PI;
+    let begin = 1.6;
+    let end = f32::exp(2. * PI);
     let step = (end - begin) / n as f32;
 
-    let mut phi = begin;
+    let mut t = begin;
+    let mut phi = f32::ln(t);
 
-    while phi <= end {
-        let r = 0.3 * f32::exp(0.3 * phi);
+    while t <= end {
+        let r = 1.5 * f32::exp(phi);
         let x = r * f32::cos(phi + offset);
         let y = 0.;
         let z = r * f32::sin(phi + offset);
         let radius = 0.4;
 
         planets.push(Planet { x, y, z, radius });
-        phi += step;
+        t += step;
+        phi = f32::ln(t);
     }
 
     planets
@@ -150,6 +152,6 @@ fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Ve
         .into_iter()
         .chain(second_arm.into_iter())
         .chain(third_arm.into_iter())
-        .flat_map(|planet| rand_planet_field(10, &planet, rng))
+        .flat_map(|planet| rand_planet_field(6, &planet, rng))
         .collect()
 }
