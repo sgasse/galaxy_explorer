@@ -1,14 +1,10 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use bevy::ecs::system::Resource;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod galaxy;
+pub mod pan_cam;
+pub mod regular_cam;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[derive(Resource)]
+pub struct WorldParams {
+    pub number_of_planets: usize,
 }
