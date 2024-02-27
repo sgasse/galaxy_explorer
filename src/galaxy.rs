@@ -1,12 +1,21 @@
 use bevy::prelude::*;
 use bevy_prng::ChaCha8Rng;
 use bevy_rand::prelude::*;
-use rand::distributions::Distribution as _;
+use rand::{distributions::Distribution as _, seq::SliceRandom as _};
 use rand_distr::Normal;
 
 use crate::WorldParams;
 
 const PI: f32 = 3.141592653589793;
+
+const PLANET_COLORS: &[(f32, f32, f32)] = &[
+    (470., 460., 240.),
+    (438., 424., 150.),
+    (500., 490., 348.),
+    (0., 0., 500.),
+    (92., 92., 484.),
+    (190., 190., 454.),
+];
 
 pub fn setup_scene(
     params: Res<WorldParams>,
@@ -15,19 +24,25 @@ pub fn setup_scene(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut rng: ResMut<GlobalEntropy<ChaCha8Rng>>,
 ) {
-    let material_emissive1 = materials.add(StandardMaterial {
-        emissive: Color::rgb_linear(0., 0., 500.),
-        ..default()
-    });
-    let material_emissive2 = materials.add(StandardMaterial {
-        emissive: Color::rgb_linear(500., 0., 0.),
+    let planet_materials: Vec<_> = PLANET_COLORS
+        .iter()
+        .map(|(r, g, b)| {
+            materials.add(StandardMaterial {
+                emissive: Color::rgb_linear(*r, *g, *b),
+                ..Default::default()
+            })
+        })
+        .collect();
+
+    let material_center = materials.add(StandardMaterial {
+        emissive: Color::rgb_linear(500., 500., 500.),
         ..default()
     });
 
     for planet in spiral_arm_field(params.number_of_planets, &mut rng) {
         spawn_planet(
             &planet,
-            material_emissive1.clone(),
+            planet_materials.choose(rng.as_mut()).unwrap().clone(),
             &mut commands,
             &mut meshes,
         );
@@ -40,7 +55,7 @@ pub fn setup_scene(
             z: 0.,
             radius: 1.4,
         },
-        material_emissive2.clone(),
+        material_center.clone(),
         &mut commands,
         &mut meshes,
     );
