@@ -13,7 +13,7 @@ use argh::FromArgs;
 /// Show a galaxy view.
 struct GalaxyView {
     /// how many planets to sample
-    #[argh(option, short = 'n', default = "10")]
+    #[argh(option, short = 'n', default = "20")]
     number_of_planets: usize,
 }
 
