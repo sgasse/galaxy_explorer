@@ -9,7 +9,7 @@ use rand_distr::Normal;
 
 use crate::WorldParams;
 
-const PLANET_COLORS: &[(f32, f32, f32)] = &[
+const STAR_COLORS: &[(f32, f32, f32)] = &[
     (470000., 460000., 240000.),
     (438000., 424000., 150000.),
     (500000., 490000., 348000.),
@@ -25,7 +25,7 @@ pub fn setup_scene(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut rng: ResMut<GlobalEntropy<ChaCha8Rng>>,
 ) {
-    let planet_materials: Vec<_> = PLANET_COLORS
+    let star_materials: Vec<_> = STAR_COLORS
         .iter()
         .map(|(r, g, b)| {
             materials.add(StandardMaterial {
@@ -40,17 +40,17 @@ pub fn setup_scene(
         ..default()
     });
 
-    for planet in spiral_arm_field(params.number_of_planets, &mut rng) {
-        spawn_planet(
-            &planet,
-            planet_materials.choose(rng.as_mut()).unwrap().clone(),
+    for star in spiral_arm_field(params.number_of_stars, &mut rng) {
+        spawn_star(
+            &star,
+            star_materials.choose(rng.as_mut()).unwrap().clone(),
             &mut commands,
             &mut meshes,
         );
     }
 
-    spawn_planet(
-        &Planet {
+    spawn_star(
+        &Star {
             x: 0.,
             y: 0.,
             z: 0.,
@@ -62,24 +62,24 @@ pub fn setup_scene(
     );
 }
 
-struct Planet {
+struct Star {
     x: f32,
     y: f32,
     z: f32,
     radius: f32,
 }
 
-/// Tags and entity as a planet.
+/// Tags and entity as a star.
 #[derive(Component)]
-struct PlanetAnchor;
+struct StarAnchor;
 
-fn spawn_planet(
-    planet: &Planet,
+fn spawn_star(
+    star: &Star,
     material: Handle<StandardMaterial>,
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
 ) {
-    let Planet { x, y, z, radius } = planet;
+    let Star { x, y, z, radius } = star;
 
     commands.spawn((
         PbrBundle {
@@ -88,30 +88,30 @@ fn spawn_planet(
             transform: Transform::from_xyz(*x, *y, *z),
             ..default()
         },
-        PlanetAnchor,
+        StarAnchor,
     ));
 }
 
-fn rand_planet_field(
+fn rand_star_field(
     n: usize,
-    planet: &Planet,
+    star: &Star,
     rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>,
-) -> Vec<Planet> {
+) -> Vec<Star> {
     let rng = rng.as_mut();
 
     let x_scale = 20.;
     let y_scale = 2.;
     let z_scale = 20.;
 
-    let x_ranger = Normal::new(planet.x, x_scale / 2.).unwrap();
-    let y_ranger = Normal::new(planet.y, y_scale / 2.).unwrap();
-    let z_ranger = Normal::new(planet.z, z_scale / 2.).unwrap();
+    let x_ranger = Normal::new(star.x, x_scale / 2.).unwrap();
+    let y_ranger = Normal::new(star.y, y_scale / 2.).unwrap();
+    let z_ranger = Normal::new(star.z, z_scale / 2.).unwrap();
     let radius_ranger = Normal::new(0.3, 0.1).unwrap().map(|val: f32| val.max(0.1));
 
-    let mut planets = Vec::with_capacity(n);
+    let mut stars = Vec::with_capacity(n);
 
     for _ in 0..n {
-        planets.push(Planet {
+        stars.push(Star {
             x: x_ranger.sample(rng),
             y: y_ranger.sample(rng),
             z: z_ranger.sample(rng),
@@ -119,11 +119,11 @@ fn rand_planet_field(
         });
     }
 
-    planets
+    stars
 }
 
-fn spiral_arm(n: usize, offset: f32) -> Vec<Planet> {
-    let mut planets = Vec::with_capacity(n);
+fn spiral_arm(n: usize, offset: f32) -> Vec<Star> {
+    let mut stars = Vec::with_capacity(n);
 
     // Spiral
     // x = r(phi)cos(phi)
@@ -145,15 +145,15 @@ fn spiral_arm(n: usize, offset: f32) -> Vec<Planet> {
         let z = r * f32::sin(phi + offset);
         let radius = 0.4;
 
-        planets.push(Planet { x, y, z, radius });
+        stars.push(Star { x, y, z, radius });
         t += step;
         phi = f32::ln(t);
     }
 
-    planets
+    stars
 }
 
-fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Vec<Planet> {
+fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Vec<Star> {
     let first_arm = spiral_arm(n, 0.);
     let second_arm = spiral_arm(n, (2. / 3.) * PI);
     let third_arm = spiral_arm(n, (4. / 3.) * PI);
@@ -162,6 +162,6 @@ fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Ve
         .into_iter()
         .chain(second_arm)
         .chain(third_arm)
-        .flat_map(|planet| rand_planet_field(6, &planet, rng))
+        .flat_map(|star| rand_star_field(6, &star, rng))
         .collect()
 }

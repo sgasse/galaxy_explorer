@@ -12,16 +12,16 @@ use argh::FromArgs;
 #[derive(FromArgs)]
 /// Show a galaxy view.
 struct GalaxyView {
-    /// how many planets to sample
+    /// how many stars to sample
     #[argh(option, short = 'n', default = "20")]
-    number_of_planets: usize,
+    number_of_stars: usize,
 }
 
 fn main() {
     let args: GalaxyView = argh::from_env();
 
     let params = WorldParams {
-        number_of_planets: args.number_of_planets,
+        number_of_stars: args.number_of_stars,
     };
 
     App::new()

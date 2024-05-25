@@ -6,5 +6,5 @@ pub mod regular_cam;
 
 #[derive(Resource)]
 pub struct WorldParams {
-    pub number_of_planets: usize,
+    pub number_of_stars: usize,
 }
