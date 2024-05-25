@@ -1,4 +1,7 @@
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
+use bevy_math::primitives::Sphere;
 use bevy_prng::ChaCha8Rng;
 use bevy_rand::prelude::*;
 use rand::{distributions::Distribution as _, seq::SliceRandom as _};
@@ -6,15 +9,13 @@ use rand_distr::Normal;
 
 use crate::WorldParams;
 
-const PI: f32 = 3.141592653589793;
-
 const PLANET_COLORS: &[(f32, f32, f32)] = &[
-    (470., 460., 240.),
-    (438., 424., 150.),
-    (500., 490., 348.),
-    (500., 500., 500.),
-    (92., 92., 484.),
-    (190., 190., 454.),
+    (470000., 460000., 240000.),
+    (438000., 424000., 150000.),
+    (500000., 490000., 348000.),
+    (500000., 500000., 500000.),
+    (92000., 92000., 484000.),
+    (190000., 190000., 454000.),
 ];
 
 pub fn setup_scene(
@@ -35,7 +36,7 @@ pub fn setup_scene(
         .collect();
 
     let material_center = materials.add(StandardMaterial {
-        emissive: Color::rgb_linear(500., 500., 500.),
+        emissive: Color::rgb_linear(500000., 500000., 500000.),
         ..default()
     });
 
@@ -82,13 +83,7 @@ fn spawn_planet(
 
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(
-                Mesh::try_from(shape::Icosphere {
-                    radius: *radius,
-                    subdivisions: 5,
-                })
-                .unwrap(),
-            ),
+            mesh: meshes.add(Sphere::new(*radius).mesh().ico(5).unwrap()),
             material,
             transform: Transform::from_xyz(*x, *y, *z),
             ..default()
@@ -165,8 +160,8 @@ fn spiral_arm_field(n: usize, rng: &mut ResMut<GlobalEntropy<ChaCha8Rng>>) -> Ve
 
     first_arm
         .into_iter()
-        .chain(second_arm.into_iter())
-        .chain(third_arm.into_iter())
+        .chain(second_arm)
+        .chain(third_arm)
         .flat_map(|planet| rand_planet_field(6, &planet, rng))
         .collect()
 }

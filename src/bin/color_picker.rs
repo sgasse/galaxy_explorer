@@ -51,13 +51,7 @@ fn setup_scene(
     });
 
     commands.spawn(PbrBundle {
-        mesh: meshes.add(
-            Mesh::try_from(shape::Icosphere {
-                radius: 1.4,
-                subdivisions: 5,
-            })
-            .unwrap(),
-        ),
+        mesh: meshes.add(Sphere::new(1.4).mesh().ico(5).unwrap()),
         material: material_emissive1,
         transform: Transform::from_xyz(0., 0., 0.),
         ..default()

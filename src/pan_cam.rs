@@ -7,7 +7,7 @@ use bevy::{
     core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping},
     input::{
         mouse::{MouseMotion, MouseWheel},
-        Input,
+        ButtonInput,
     },
     prelude::*,
     window::Window,
@@ -37,7 +37,7 @@ pub fn pan_orbit_camera(
     window: Query<&Window>,
     mut ev_motion: EventReader<MouseMotion>,
     mut ev_scroll: EventReader<MouseWheel>,
-    input_mouse: Res<Input<MouseButton>>,
+    input_mouse: Res<ButtonInput<MouseButton>>,
     mut query: Query<(&mut PanOrbitCamera, &mut Transform, &Projection)>,
 ) {
     let window = window.single();
@@ -90,8 +90,9 @@ pub fn pan_orbit_camera(
             let delta_y = rotation_move.y / window.y * std::f32::consts::PI;
             let yaw = Quat::from_rotation_y(-delta_x);
             let pitch = Quat::from_rotation_x(-delta_y);
+            // Note: We multiply quaternions - the order matters.
             transform.rotation = yaw * transform.rotation; // rotate around global y axis
-            transform.rotation = transform.rotation * pitch; // rotate around local x axis
+            transform.rotation *= pitch; // rotate around local x axis
         } else if pan.length_squared() > 0.0 {
             any = true;
             // Make panning distance independent of resolution and FOV.
@@ -128,10 +129,7 @@ pub fn pan_orbit_camera(
 }
 
 fn get_primary_window_size(window: &Window) -> Vec2 {
-    Vec2::new(
-        window.resolution.width() as f32,
-        window.resolution.height() as f32,
-    )
+    Vec2::new(window.resolution.width(), window.resolution.height())
 }
 
 /// Spawn a camera supporting panning and orbiting.
@@ -145,14 +143,14 @@ pub fn spawn_pan_orbit_camera(mut commands: Commands) {
                 hdr: true,
                 ..default()
             },
-            transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
             tonemapping: Tonemapping::TonyMcMapface,
+            transform: Transform::from_translation(translation).looking_at(Vec3::ZERO, Vec3::Y),
             ..Default::default()
         },
         PanOrbitCamera {
             radius,
             ..Default::default()
         },
-        BloomSettings::default(),
+        BloomSettings::NATURAL,
     ));
 }

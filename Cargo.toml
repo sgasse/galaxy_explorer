@@ -3,13 +3,12 @@ name = "galaxy-explorer"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 argh = "0.1.12"
-bevy = "0.12.1"
-bevy_prng = { version = "0.2.0", features = ["rand_chacha"] }
-bevy_rand = "0.4.0"
+bevy = "0.13.2"
+bevy_math = "0.13.2"
+bevy_prng = { version = "0.6.0", features = ["rand_chacha"] }
+bevy_rand = "0.6.0"
 rand = "0.8.5"
 rand_core = "0.6.4"
 rand_distr = "0.4.3"
