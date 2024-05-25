@@ -1,0 +1,11 @@
+[package]
+name = "viewer_sp"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+argh = { workspace = true }
+bevy = { workspace = true }
+bevy_prng = { workspace = true, features = ["rand_chacha"] }
+bevy_rand = { workspace = true }
+galaxy = { workspace = true }

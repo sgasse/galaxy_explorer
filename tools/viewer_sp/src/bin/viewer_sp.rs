@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_prng::ChaCha8Rng;
 use bevy_rand::prelude::*;
-use galaxy_explorer::{
+use galaxy::{
     galaxy::setup_scene,
     pan_cam::{pan_orbit_camera, spawn_pan_orbit_camera},
     WorldParams,

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use galaxy_explorer::pan_cam::{pan_orbit_camera, spawn_pan_orbit_camera};
+use galaxy::pan_cam::{pan_orbit_camera, spawn_pan_orbit_camera};
 
 use argh::FromArgs;
 

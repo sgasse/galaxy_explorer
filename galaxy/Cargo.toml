@@ -1,0 +1,12 @@
+[package]
+name = "galaxy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { workspace = true }
+bevy_math = { workspace = true }
+bevy_prng = { workspace = true, features = ["rand_chacha"] }
+bevy_rand = { workspace = true }
+rand = { workspace = true }
+rand_distr = { workspace = true }
