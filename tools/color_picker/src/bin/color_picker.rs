@@ -98,6 +98,7 @@ struct ColorSettings {
 #[derive(Component)]
 struct StarAnchor;
 
+#[allow(clippy::too_many_arguments)]
 fn update_bloom_settings(
     mut camera: Query<(Entity, Option<&mut BloomSettings>), With<Camera>>,
     mut text: Query<&mut Text>,
