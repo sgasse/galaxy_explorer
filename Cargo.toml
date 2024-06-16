@@ -8,6 +8,7 @@ bevy = "0.13.2"
 bevy_math = "0.13.2"
 bevy_prng = { version = "0.6.0" }
 bevy_rand = "0.6.0"
+console_error_panic_hook = "^0.1.7"
 galaxy = { path = "galaxy" }
 rand = "0.8.5"
 rand_core = "0.6.4"

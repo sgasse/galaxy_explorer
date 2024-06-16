@@ -8,6 +8,12 @@ use galaxy::{
 };
 
 fn main() {
+    #[cfg(target_arch = "wasm32")]
+    {
+        use galaxy::wasm::set_panic_hook;
+        set_panic_hook();
+    }
+
     #[cfg(not(target_arch = "wasm32"))]
     let params = {
         use argh::FromArgs;

@@ -1823,6 +1823,7 @@ dependencies = [
  "bevy_math",
  "bevy_prng",
  "bevy_rand",
+ "console_error_panic_hook",
  "rand",
  "rand_distr",
 ]
