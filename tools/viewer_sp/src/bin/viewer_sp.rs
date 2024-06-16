@@ -9,10 +9,7 @@ use galaxy::{
 
 fn main() {
     #[cfg(target_arch = "wasm32")]
-    {
-        use galaxy::wasm::set_panic_hook;
-        set_panic_hook();
-    }
+    init_wasm();
 
     #[cfg(not(target_arch = "wasm32"))]
     let params = {
@@ -45,4 +42,16 @@ fn main() {
         .add_systems(Startup, spawn_pan_orbit_camera)
         .add_systems(Update, pan_orbit_camera)
         .run();
+}
+
+#[cfg(target_arch = "wasm32")]
+fn init_wasm() {
+    use galaxy::wasm::{console, search_params, set_panic_hook};
+    set_panic_hook();
+
+    if let Some(params) = search_params() {
+        if !params.is_empty() {
+            console::log_1(&format!("Search params: {}", params).into());
+        }
+    }
 }

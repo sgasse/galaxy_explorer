@@ -1826,6 +1826,7 @@ dependencies = [
  "console_error_panic_hook",
  "rand",
  "rand_distr",
+ "web-sys",
 ]
 
 [[package]]
