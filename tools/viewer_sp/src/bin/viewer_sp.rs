@@ -7,21 +7,28 @@ use galaxy::{
     WorldParams,
 };
 
-use argh::FromArgs;
-
-#[derive(FromArgs)]
-/// Show a galaxy view.
-struct GalaxyView {
-    /// how many stars to sample
-    #[argh(option, short = 'n', default = "20")]
-    number_of_stars: usize,
-}
-
 fn main() {
-    let args: GalaxyView = argh::from_env();
+    #[cfg(not(target_arch = "wasm32"))]
+    let params = {
+        use argh::FromArgs;
 
+        #[derive(FromArgs)]
+        /// Show a galaxy view.
+        struct GalaxyView {
+            /// how many stars to sample
+            #[argh(option, short = 'n', default = "20")]
+            number_of_stars: usize,
+        }
+
+        let args: GalaxyView = argh::from_env();
+        WorldParams {
+            number_of_stars: args.number_of_stars,
+        }
+    };
+
+    #[cfg(target_arch = "wasm32")]
     let params = WorldParams {
-        number_of_stars: args.number_of_stars,
+        number_of_stars: 20,
     };
 
     App::new()

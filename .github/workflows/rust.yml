@@ -66,3 +66,44 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release upload ${{ github.ref_name }} ${{ steps.archive.outputs.path }}
+
+  wasm_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install bevy dependencies
+        shell: bash
+        run: |
+          sudo apt-get install clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "wasm32-unknown-unknown"
+
+      - name: Install wasm-bindgen
+        shell: bash
+        run: |
+          cargo install wasm-bindgen-cli
+
+      - name: Build for wasm32
+        shell: bash
+        run: |
+          cargo build --bin viewer_sp --release --target wasm32-unknown-unknown
+
+      - name: Generate bindings
+        shell: bash
+        run: |
+          wasm-bindgen \
+            --no-typescript \
+            --target web \
+            --out-dir ./www/ \
+            --out-name "viewer_sp" \
+            ./target/wasm32-unknown-unknown/release/viewer_sp.wasm
+
+      - name: List output
+        shell: bash
+        run: |
+          ls -la www
