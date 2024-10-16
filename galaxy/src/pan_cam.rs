@@ -4,12 +4,14 @@
 //! https://bevy-cheatbook.github.io/cookbook/pan-orbit-camera.html
 //!
 use bevy::{
-    core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping},
+    asset::LoadState,
+    core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping, Skybox},
     input::{
         mouse::{MouseMotion, MouseWheel},
         ButtonInput,
     },
     prelude::*,
+    render::render_resource::{TextureViewDescriptor, TextureViewDimension},
     window::Window,
 };
 
@@ -133,9 +135,12 @@ fn get_primary_window_size(window: &Window) -> Vec2 {
 }
 
 /// Spawn a camera supporting panning and orbiting.
-pub fn spawn_pan_orbit_camera(mut commands: Commands) {
+pub fn spawn_pan_orbit_camera(mut commands: Commands, asset_server: Res<AssetServer>) {
     let translation = Vec3::new(-50.0, 10.0, -50.0);
     let radius = translation.length();
+
+    let image = "textures/skybox_black.png";
+    let skybox_handle = asset_server.load(image);
 
     commands.spawn((
         Camera3dBundle {
@@ -152,5 +157,48 @@ pub fn spawn_pan_orbit_camera(mut commands: Commands) {
             ..Default::default()
         },
         BloomSettings::NATURAL,
+        Skybox {
+            image: skybox_handle.clone(),
+            brightness: 50.0,
+        },
     ));
+
+    commands.insert_resource(Cubemap {
+        is_loaded: false,
+        index: 0,
+        image_handle: skybox_handle,
+    });
+}
+
+#[derive(Resource)]
+pub struct Cubemap {
+    is_loaded: bool,
+    index: usize,
+    image_handle: Handle<Image>,
+}
+
+pub fn asset_loaded(
+    asset_server: Res<AssetServer>,
+    mut images: ResMut<Assets<Image>>,
+    mut cubemap: ResMut<Cubemap>,
+    mut skyboxes: Query<&mut Skybox>,
+) {
+    if !cubemap.is_loaded && asset_server.load_state(&cubemap.image_handle) == LoadState::Loaded {
+        let image = images.get_mut(&cubemap.image_handle).unwrap();
+        // NOTE: PNGs do not have any metadata that could indicate they contain a cubemap texture,
+        // so they appear as one texture. The following code reconfigures the texture as necessary.
+        if image.texture_descriptor.array_layer_count() == 1 {
+            image.reinterpret_stacked_2d_as_array(image.height() / image.width());
+            image.texture_view_descriptor = Some(TextureViewDescriptor {
+                dimension: Some(TextureViewDimension::Cube),
+                ..default()
+            });
+        }
+
+        for mut skybox in &mut skyboxes {
+            skybox.image = cubemap.image_handle.clone();
+        }
+
+        cubemap.is_loaded = true;
+    }
 }

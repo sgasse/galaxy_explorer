@@ -323,6 +323,7 @@ version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65b9eadaacf8fe971331bc3f250f35c18bc9dace3f96b483062f38ac07e3a1b4"
 dependencies = [
+ "bevy_dylib",
  "bevy_internal",
 ]
 
@@ -497,6 +498,15 @@ dependencies = [
  "bevy_utils",
  "const-fnv1a-hash",
  "sysinfo",
+]
+
+[[package]]
+name = "bevy_dylib"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "922826e3b8f37c19836b49e18ceca662260cce87ab8faa4db6df8433903660cc"
+dependencies = [
+ "bevy_internal",
 ]
 
 [[package]]
@@ -1830,6 +1840,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "galaxy_math"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "rand_distr",
+]
+
+[[package]]
+name = "galaxy_viewer"
+version = "0.1.0"
+dependencies = [
+ "argh",
+ "bevy",
+ "galaxy",
+ "galaxy_math",
+ "log",
+]
+
+[[package]]
 name = "gethostname"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2342,9 +2371,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.21"
+version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90ed8c1e510134f979dbc4f070f87d4313098b704861a105fe34231c70a3901c"
+checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
 name = "mach2"
@@ -3475,17 +3504,6 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
-
-[[package]]
-name = "viewer_sp"
-version = "0.1.0"
-dependencies = [
- "argh",
- "bevy",
- "bevy_prng",
- "bevy_rand",
- "galaxy",
-]
 
 [[package]]
 name = "walkdir"

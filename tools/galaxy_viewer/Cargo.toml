@@ -1,0 +1,11 @@
+[package]
+name = "galaxy_viewer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+argh = { workspace = true }
+bevy = { workspace = true }
+galaxy = { workspace = true }
+galaxy_math = { workspace = true }
+log = "0.4.22"

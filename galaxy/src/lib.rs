@@ -7,6 +7,7 @@ pub mod regular_cam;
 pub mod wasm;
 
 #[derive(Resource)]
-pub struct WorldParams {
-    pub number_of_stars: usize,
+pub struct GalaxyParams {
+    pub star_positions: Vec<[f32; 3]>,
+    pub star_radius: f32,
 }
