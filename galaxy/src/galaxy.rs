@@ -5,12 +5,12 @@ use bevy_mod_picking::prelude::*;
 use crate::{GalaxyParams, StarClickedEvent};
 
 const STAR_COLORS: &[Color] = &[
-    Color::rgb_linear(470000., 460000., 240000.),
-    Color::rgb_linear(438000., 424000., 150000.),
-    Color::rgb_linear(500000., 490000., 348000.),
-    Color::rgb_linear(500000., 500000., 500000.),
-    Color::rgb_linear(92000., 92000., 484000.),
-    Color::rgb_linear(190000., 190000., 454000.),
+    Color::rgb_linear(47000., 46000., 24000.),
+    Color::rgb_linear(43800., 42400., 15000.),
+    Color::rgb_linear(50000., 49000., 34800.),
+    Color::rgb_linear(50000., 50000., 50000.),
+    Color::rgb_linear(9200., 9200., 48400.),
+    Color::rgb_linear(19000., 19000., 45400.),
 ];
 
 pub fn setup_stars(
@@ -30,7 +30,7 @@ pub fn setup_stars(
         .collect();
 
     let material_center = materials.add(StandardMaterial {
-        emissive: Color::rgb_linear(500000., 500000., 500000.),
+        emissive: Color::rgb_linear(50000., 50000., 50000.),
         ..default()
     });
 

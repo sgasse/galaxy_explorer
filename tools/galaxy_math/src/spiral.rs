@@ -47,7 +47,7 @@ fn spiral_arms(
     while phi < PHI_MAX {
         phi += phi_inc;
         let r = radius(a, phi);
-        let (x, z) = xz(r, phi, &rotation);
+        let (x, z) = xz(r, phi, rotation);
 
         if let Some((x0, z0)) = last_point {
             let dist = f32::sqrt((x - x0).powi(2) + (z - z0).powi(2));
@@ -61,11 +61,11 @@ fn spiral_arms(
         last_point = Some((x, z));
 
         first_arm.push([x, 0., z]);
-        let (x2, z2) = xz(r, phi + PI, &rotation);
+        let (x2, z2) = xz(r, phi + PI, rotation);
         second_arm.push([x2, 0., z2]);
     }
 
-    first_arm.into_iter().chain(second_arm.into_iter())
+    first_arm.into_iter().chain(second_arm)
 }
 
 enum Rotation {
