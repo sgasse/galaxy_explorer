@@ -3,10 +3,11 @@ use bevy::{
     prelude::*,
     window::{WindowMode, WindowResolution},
 };
+use bevy_mod_picking::DefaultPickingPlugins;
 use galaxy::{
     galaxy::setup_stars,
-    pan_cam::{asset_loaded, pan_orbit_camera, spawn_pan_orbit_camera},
-    GalaxyParams,
+    pan_cam::{asset_loaded, center_on_clicked, pan_orbit_camera, spawn_pan_orbit_camera},
+    GalaxyParams, StarClickedEvent,
 };
 use galaxy_math::{cluster::cluster, spiral::spiral};
 
@@ -81,8 +82,12 @@ fn main() {
     App::new()
         .insert_resource(params)
         .add_plugins(DefaultPlugins.set(window))
+        .add_plugins(DefaultPickingPlugins)
+        .add_event::<StarClickedEvent>()
         .add_systems(Startup, setup_stars)
         .add_systems(Startup, spawn_pan_orbit_camera)
-        .add_systems(Update, (pan_orbit_camera, asset_loaded))
+        .add_systems(Update, pan_orbit_camera)
+        .add_systems(Update, asset_loaded)
+        .add_systems(Update, center_on_clicked)
         .run();
 }

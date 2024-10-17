@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 argh = { workspace = true }
 bevy = { workspace = true }
+bevy_mod_picking = { workspace = true }
 galaxy = { workspace = true }
 galaxy_math = { workspace = true }
-log = "0.4.22"
+log = { workspace = true }

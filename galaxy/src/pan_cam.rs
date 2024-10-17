@@ -15,6 +15,8 @@ use bevy::{
     window::Window,
 };
 
+use crate::{galaxy::StarAnchor, StarClickedEvent};
+
 /// Tags an entity as capable of panning and orbiting.
 #[derive(Component)]
 pub struct PanOrbitCamera {
@@ -167,6 +169,25 @@ pub fn spawn_pan_orbit_camera(mut commands: Commands, asset_server: Res<AssetSer
         is_loaded: false,
         image_handle: skybox_handle,
     });
+}
+
+/// Center camera on the clicked-on star.
+pub fn center_on_clicked(
+    mut events: EventReader<StarClickedEvent>,
+    stars: Query<(&StarAnchor, &Transform), Without<PanOrbitCamera>>,
+    mut cam_query: Query<(&mut PanOrbitCamera, &mut Transform)>,
+) {
+    for event in events.read() {
+        if let Ok((_, star_transform)) = stars.get(event.target) {
+            for (mut cam, mut transform) in cam_query.iter_mut() {
+                let delta = star_transform.translation - cam.focus;
+
+                cam.focus += delta;
+                transform.translation += delta;
+                info!("Updating camera focus to {:?}", cam.focus);
+            }
+        }
+    }
 }
 
 #[derive(Resource)]

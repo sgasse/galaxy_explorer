@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_math::primitives::Sphere;
+use bevy_mod_picking::prelude::*;
 
-use crate::GalaxyParams;
+use crate::{GalaxyParams, StarClickedEvent};
 
 const STAR_COLORS: &[(f32, f32, f32)] = &[
     (470000., 460000., 240000.),
@@ -38,7 +39,7 @@ pub fn setup_stars(
     }
 }
 
-struct Star {
+pub struct Star {
     x: f32,
     y: f32,
     z: f32,
@@ -47,7 +48,7 @@ struct Star {
 
 /// Tags and entity as a star.
 #[derive(Component)]
-struct StarAnchor;
+pub struct StarAnchor;
 
 fn spawn_star(
     star: &Star,
@@ -65,5 +66,6 @@ fn spawn_star(
             ..default()
         },
         StarAnchor,
+        On::<Pointer<Click>>::send_event::<StarClickedEvent>(),
     ));
 }
