@@ -53,7 +53,15 @@ struct SpiralArgs {
 
 fn main() {
     let params = {
+        #[cfg(not(target_arch = "wasm32"))]
         let args: Args = argh::from_env();
+
+        #[cfg(target_arch = "wasm32")]
+        let args = Args {
+            star_radius: 5.,
+            world_diameter: 50000.,
+            cmd: GalaxyType::Spiral(SpiralArgs { sample_dist: 1000. }),
+        };
 
         let star_positions = match args.cmd {
             GalaxyType::Cluster(cluster_args) => {

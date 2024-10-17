@@ -91,7 +91,7 @@ jobs:
       - name: Build for wasm32
         shell: bash
         run: |
-          cargo build --bin viewer_sp --release --target wasm32-unknown-unknown
+          cargo build --bin galaxy_viewer --release --target wasm32-unknown-unknown
 
       - name: Generate bindings
         shell: bash
@@ -100,8 +100,8 @@ jobs:
             --no-typescript \
             --target web \
             --out-dir ./www/ \
-            --out-name "viewer_sp" \
-            ./target/wasm32-unknown-unknown/release/viewer_sp.wasm
+            --out-name "galaxy_viewer" \
+            ./target/wasm32-unknown-unknown/release/galaxy_viewer.wasm
 
       - name: List output
         shell: bash
