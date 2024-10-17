@@ -165,7 +165,6 @@ pub fn spawn_pan_orbit_camera(mut commands: Commands, asset_server: Res<AssetSer
 
     commands.insert_resource(Cubemap {
         is_loaded: false,
-        index: 0,
         image_handle: skybox_handle,
     });
 }
@@ -173,7 +172,6 @@ pub fn spawn_pan_orbit_camera(mut commands: Commands, asset_server: Res<AssetSer
 #[derive(Resource)]
 pub struct Cubemap {
     is_loaded: bool,
-    index: usize,
     image_handle: Handle<Image>,
 }
 
