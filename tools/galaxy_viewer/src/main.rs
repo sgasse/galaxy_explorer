@@ -49,6 +49,10 @@ struct SpiralArgs {
     /// approximate distance between sample points
     #[argh(option, default = "1000.")]
     sample_dist: f32,
+
+    /// generate right-turning galaxy
+    #[argh(switch)]
+    right_turning: bool,
 }
 
 fn main() {
@@ -60,14 +64,21 @@ fn main() {
         let args = Args {
             star_radius: 5.,
             world_diameter: 50000.,
-            cmd: GalaxyType::Spiral(SpiralArgs { sample_dist: 1000. }),
+            cmd: GalaxyType::Spiral(SpiralArgs {
+                sample_dist: 1000.,
+                right_turning: false,
+            }),
         };
 
         let star_positions = match args.cmd {
             GalaxyType::Cluster(cluster_args) => {
                 cluster(cluster_args.grid_points, args.world_diameter)
             }
-            GalaxyType::Spiral(spiral_args) => spiral(spiral_args.sample_dist, args.world_diameter),
+            GalaxyType::Spiral(spiral_args) => spiral(
+                spiral_args.sample_dist,
+                args.world_diameter,
+                spiral_args.right_turning,
+            ),
         };
         println!("Number of stars: {}", star_positions.len());
 

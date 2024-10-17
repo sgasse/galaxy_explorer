@@ -4,13 +4,13 @@ use bevy_mod_picking::prelude::*;
 
 use crate::{GalaxyParams, StarClickedEvent};
 
-const STAR_COLORS: &[(f32, f32, f32)] = &[
-    (470000., 460000., 240000.),
-    (438000., 424000., 150000.),
-    (500000., 490000., 348000.),
-    (500000., 500000., 500000.),
-    (92000., 92000., 484000.),
-    (190000., 190000., 454000.),
+const STAR_COLORS: &[Color] = &[
+    Color::rgb_linear(470000., 460000., 240000.),
+    Color::rgb_linear(438000., 424000., 150000.),
+    Color::rgb_linear(500000., 490000., 348000.),
+    Color::rgb_linear(500000., 500000., 500000.),
+    Color::rgb_linear(92000., 92000., 484000.),
+    Color::rgb_linear(190000., 190000., 454000.),
 ];
 
 pub fn setup_stars(
@@ -19,12 +19,38 @@ pub fn setup_stars(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    let star_materials: Vec<_> = STAR_COLORS
+        .iter()
+        .map(|color| {
+            materials.add(StandardMaterial {
+                emissive: *color,
+                ..Default::default()
+            })
+        })
+        .collect();
+
     let material_center = materials.add(StandardMaterial {
         emissive: Color::rgb_linear(500000., 500000., 500000.),
         ..default()
     });
 
-    for position in &params.star_positions {
+    spawn_star(
+        &Star {
+            x: 0.,
+            y: 0.,
+            z: 0.,
+            radius: 4. * params.star_radius,
+        },
+        material_center.clone(),
+        &mut commands,
+        &mut meshes,
+    );
+
+    for (position, color) in params
+        .star_positions
+        .iter()
+        .zip(star_materials.iter().cycle())
+    {
         spawn_star(
             &Star {
                 x: position[0],
@@ -32,7 +58,7 @@ pub fn setup_stars(
                 z: position[2],
                 radius: params.star_radius,
             },
-            material_center.clone(),
+            color.clone(),
             &mut commands,
             &mut meshes,
         );

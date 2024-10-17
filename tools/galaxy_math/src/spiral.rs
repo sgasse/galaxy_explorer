@@ -2,15 +2,19 @@ use std::f32::consts::PI;
 
 use rand_distr::{Distribution, Uniform};
 
-pub fn spiral(sample_pos_dist: f32, size: f32) -> Vec<[f32; 3]> {
+pub fn spiral(sample_pos_dist: f32, size: f32, right_turning: bool) -> Vec<[f32; 3]> {
+    let offset = sample_pos_dist / 2.;
+    let rotation = if right_turning {
+        Rotation::Right
+    } else {
+        Rotation::Left
+    };
     let mut rng = rand::thread_rng();
     let distr = Uniform::new_inclusive(0.0_f32, 5. * sample_pos_dist);
 
-    let offset = sample_pos_dist / 2.;
-
     let mut stars = Vec::with_capacity(10000);
 
-    for p in spiral_arms(sample_pos_dist, size) {
+    for p in spiral_arms(sample_pos_dist, size, &rotation) {
         for _ in 0..10 {
             stars.push([
                 p[0] + distr.sample(&mut rng) - offset,
@@ -23,9 +27,12 @@ pub fn spiral(sample_pos_dist: f32, size: f32) -> Vec<[f32; 3]> {
     stars
 }
 
-pub fn spiral_arms(sample_pos_dist: f32, size: f32) -> impl Iterator<Item = [f32; 3]> {
+fn spiral_arms(
+    sample_pos_dist: f32,
+    size: f32,
+    rotation: &Rotation,
+) -> impl Iterator<Item = [f32; 3]> {
     let a = size / 2.;
-    let rotation = Rotation::Left;
 
     const PHI_MAX: f32 = 2. * PI;
 
