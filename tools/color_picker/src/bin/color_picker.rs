@@ -49,7 +49,8 @@ fn setup_scene(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let material_emissive1 = materials.add(StandardMaterial {
-        emissive: Color::rgb_linear(params.red as f32, params.green as f32, params.blue as f32),
+        emissive: Color::linear_rgb(params.red as f32, params.green as f32, params.blue as f32)
+            .into(),
         ..default()
     });
 
@@ -258,7 +259,7 @@ fn update_bloom_settings(
 
     if keycode.just_pressed(KeyCode::KeyM) {
         let new_material = materials.add(StandardMaterial {
-            emissive: Color::rgb_linear(settings.red, settings.green, settings.blue),
+            emissive: Color::linear_rgb(settings.red, settings.green, settings.blue).into(),
             ..default()
         });
 
