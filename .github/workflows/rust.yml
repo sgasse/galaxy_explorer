@@ -79,29 +79,19 @@ jobs:
           sudo apt-get install clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
 
       - name: Install rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.81
         with:
           targets: "wasm32-unknown-unknown"
 
       - name: Install wasm-bindgen
         shell: bash
         run: |
-          cargo install wasm-bindgen-cli
+          cargo install wasm-bindgen-cli --version 0.2.95
 
-      - name: Build for wasm32
+      - name: Build wasm32 target and generate bindings
         shell: bash
         run: |
-          cargo build --bin galaxy_viewer --release --target wasm32-unknown-unknown
-
-      - name: Generate bindings
-        shell: bash
-        run: |
-          wasm-bindgen \
-            --no-typescript \
-            --target web \
-            --out-dir ./www/ \
-            --out-name "galaxy_viewer" \
-            ./target/wasm32-unknown-unknown/release/galaxy_viewer.wasm
+          ./build_wasm.sh
 
       - name: List output
         shell: bash
